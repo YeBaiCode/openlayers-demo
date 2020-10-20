@@ -1,169 +1,164 @@
-
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+
+<head>
     <meta charset="UTF-8">
     <title>openlayer生成GML</title>
     <link rel="stylesheet" href="https://openlayers.org/en/v5.3.0/css/ol.css" />
     <script type="text/javascript" src="https://openlayers.org/en/v5.3.0/build/ol.js"></script>
     <script src="http://libs.baidu.com/jquery/2.1.4/jquery.min.js"></script>
     <style type="text/css">
-    #map,
-    html,
-    body {
-        height: 100%;
-        width: 100%;
-    }
- 
-    .content {
-        width: 100px;
-    }
+        #map,
+        html,
+        body {
+            height: 100%;
+            width: 100%;
+        }
+
+        .content {
+            width: 100px;
+        }
     </style>
-  </head>
-  <body>
+</head>
+
+<body>
     <div id="map"></div>
     <form class="form-inline">
-      <label>操作方式 &nbsp;</label>
-      <select id="interaction">
-        <option value="draw">draw</option>
-        <option value="select">select</option>
-        <!-- <option value="modify">modify</option> -->
-      </select>
-      <label>几何类型 &nbsp;</label>
-      <select id="type">
-        <option value="Point">Point</option>
-        <option value="LineString">LineString</option>
-        <option value="Polygon">Polygon</option>
-        <option value="Circle">Circle</option>
-        <option value="None">None</option>
-      </select>
-      <label>先选中要素，点击生成GML &nbsp;</label>
-      <input type="button" id="creategml" name="name" value="生成GML" />
+        <label>操作方式 &nbsp;</label>
+        <select id="interaction">
+            <option value="draw">draw</option>
+            <option value="select">select</option>
+            <!-- <option value="modify">modify</option> -->
+        </select>
+        <label>几何类型 &nbsp;</label>
+        <select id="type">
+            <option value="Point">Point</option>
+            <option value="LineString">LineString</option>
+            <option value="Polygon">Polygon</option>
+            <option value="Circle">Circle</option>
+            <option value="None">None</option>
+        </select>
+        <label>先选中要素，点击生成GML &nbsp;</label>
+        <input type="button" id="creategml" name="name" value="生成GML" />
     </form>
     <script>
-      var layers = [
-          new ol.layer.Tile({
-              source: new ol.source.XYZ({
-                  url: "http://rt{0-3}.map.gtimg.com/realtimerender?z={z}&x={x}&y={-y}&type=vector&style=0"
-              })
-          })
-      ];
-      var source = new ol.source.Vector({ wrapX: false });
-      var vector = new ol.layer.Vector({
-          source: source
-      });
-      var view = new ol.View({
-          center: [116.400146, 40.250184],
-          zoom: 9,
-          projection: ol.proj.get('EPSG:4326'),
-      });
-      var map = new ol.Map({
-          layers: layers,
-          target: 'map',
-          view: view
-      });
-      map.addLayer(vector);
-      var typeSelect = document.getElementById('type');
-      var typeInteraction = document.getElementById('interaction');
-      var draw,snap; 
-      var select = new ol.interaction.Select({
-        wrapX: false
-      });
- 
-      var modify = new ol.interaction.Modify({
-        features: select.getFeatures()
-      });
-      function addInteraction() {
-        var interactionvalue = typeInteraction.value;
-        var value = typeSelect.value;
-        if (interactionvalue == 'draw' && value !== 'None') {
-          draw = new ol.interaction.Draw({
-            source: source,
-            type: typeSelect.value
-          });
-          map.addInteraction(draw);
-          snap = new ol.interaction.Snap({source: source});
-          map.addInteraction(snap);
+        var layers = [
+            new ol.layer.Tile({
+                source: new ol.source.XYZ({
+                    url: "http://rt{0-3}.map.gtimg.com/realtimerender?z={z}&x={x}&y={-y}&type=vector&style=0"
+                })
+            })
+        ];
+        var source = new ol.source.Vector({ wrapX: false });
+        var vector = new ol.layer.Vector({
+            source: source
+        });
+        var view = new ol.View({
+            center: [116.400146, 40.250184],
+            zoom: 9,
+            projection: ol.proj.get('EPSG:4326'),
+        });
+        var map = new ol.Map({
+            layers: layers,
+            target: 'map',
+            view: view
+        });
+        map.addLayer(vector);
+        var typeSelect = document.getElementById('type');
+        var typeInteraction = document.getElementById('interaction');
+        var draw, snap;
+        var select = new ol.interaction.Select({
+            wrapX: false
+        });
+
+        var modify = new ol.interaction.Modify({
+            features: select.getFeatures()
+        });
+        function addInteraction() {
+            var interactionvalue = typeInteraction.value;
+            var value = typeSelect.value;
+            if (interactionvalue == 'draw' && value !== 'None') {
+                draw = new ol.interaction.Draw({
+                    source: source,
+                    type: typeSelect.value
+                });
+                map.addInteraction(draw);
+                snap = new ol.interaction.Snap({ source: source });
+                map.addInteraction(snap);
+            }
+            else if (interactionvalue == 'select') {
+                map.addInteraction(select);
+            }
+            // else if (interactionvalue == 'modify') {
+            //   map.addInteraction(select);
+            //   map.addInteraction(modify);          
+            //   map.addInteraction(snap);
+            // }
         }
-        else if (interactionvalue == 'select') {
-          map.addInteraction(select);
-        }
-        // else if (interactionvalue == 'modify') {
-        //   map.addInteraction(select);
-        //   map.addInteraction(modify);          
-        //   map.addInteraction(snap);
-        // }
-      }
-      typeSelect.onchange = function() {
-        map.removeInteraction(draw);
-        map.removeInteraction(snap);
-        map.removeInteraction(select);
-        // map.removeInteraction(modify);
+        typeSelect.onchange = function () {
+            map.removeInteraction(draw);
+            map.removeInteraction(snap);
+            map.removeInteraction(select);
+            // map.removeInteraction(modify);
+            addInteraction();
+        };
+        typeInteraction.onchange = function () {
+            map.removeInteraction(draw);
+            map.removeInteraction(snap);
+            map.removeInteraction(select);
+            // map.removeInteraction(modify);
+            addInteraction();
+        };
         addInteraction();
-      };
-      typeInteraction.onchange = function() {
-        map.removeInteraction(draw);
-        map.removeInteraction(snap);
-        map.removeInteraction(select);
-        // map.removeInteraction(modify);
-        addInteraction();
-      };
-      addInteraction();
-    // 点击生成GML，将选中的要素生成为GML
-    $("#creategml").click(function() {
-        // 获取feature列表
-        var featuresinsert=select.getFeatures();
-        // 获取一个feature
-        var featurenew=featuresinsert.getArray()[0];
-        // 为feature赋值属性
-        featurenew.set('transaction','update');
-        // 关联几何要素和属性要素的唯一ID
-        featurenew.setId('update.000001');
-        var featuresupdate=[featurenew];
-        featurenew.set('transaction','delete');
-        featurenew.setId('delete.000001');
-        var featuresdelete=[featurenew];  
-        // 创建WFS解析器 
-        var WFSTSerializer = new ol.format.WFS();
- 
-        // writeTransaction(inserts, updates, deletes, options)
-        // updates和deletes都需要要素有唯一ID，进行索引
-        // insert因为是新增，所以不需要
-        var featObject = WFSTSerializer.writeTransaction(featuresinsert,
-            featuresupdate, featuresdelete, {
+        // 点击生成GML，将选中的要素生成为GML
+        $("#creategml").click(function () {
+            // 获取feature列表
+            var featuresinsert = select.getFeatures();
+            // 获取一个feature
+            var featurenew = featuresinsert.getArray()[0];
+            // 为feature赋值属性
+            featurenew.set('transaction', 'update');
+            // 关联几何要素和属性要素的唯一ID
+            featurenew.setId('update.000001');
+            var featuresupdate = [featurenew];
+            featurenew.set('transaction', 'delete');
+            featurenew.setId('delete.000001');
+            var featuresdelete = [featurenew];
+            // 创建WFS解析器 
+            var WFSTSerializer = new ol.format.WFS();
+            // writeTransaction(inserts, updates, deletes, options)
+            // updates和deletes都需要要素有唯一ID，进行索引
+            // insert因为是新增，所以不需要
+            var featObject = WFSTSerializer.writeTransaction(featuresinsert,
+                featuresupdate, featuresdelete, {
                 featureNS: 'http://geoserver/gismap',//工作区URI
                 featurePrefix: 'gismap',//工作区名称
                 featureType: 'gismap:v6_time_pref_pgn_utf_wgs84',//图层名称
                 srsName: 'EPSG:4326'//坐标系
+            });
+            var serializer = new XMLSerializer();
+            var featString = serializer.serializeToString(featObject);
+            // 打印到控制台看看效果
+            console.log(featString);
+            // 顺便看一下WKT文本
+            var wkt = new ol.format.WKT();
+            var wktstr = wkt.writeGeometry(featurenew.getGeometry());
+            console.log(wktstr);
+            // 保存点坐标
+            $.ajax({
+                type: "post",
+                url: "test.json",
+                data: { 
+                    data: wktstr
+                 },
+                dataType: "json",
+                success: function (data) {
+                    console.log()
+                }
+            });
         });
-        var serializer = new XMLSerializer();
-        var featString = serializer.serializeToString(featObject);
-        // 打印到控制台看看效果
-        console.log(featString);
-        // 顺便看一下WKT文本
-        var wkt=new ol.format.WKT();
-        var wktstr=wkt.writeGeometry(featurenew.getGeometry());
-        console.log(wktstr);
-        // 保存点坐标
 
-        $.ajax({
-             type: "post",
-             url: "test.json",
-             data: {username:$("#username").val(), content:$("#content").val()},
-             dataType: "json",
-             success: function(data){
-                         $('#resText').empty();   //清空resText里面的所有内容
-                         var html = ''; 
-                         $.each(data, function(commentIndex, comment){
-                               html += '<div class="comment"><h6>' + comment['username']
-                                         + ':</h6><p class="para"' + comment['content']
-                                         + '</p></div>';
-                         });
-                         $('#resText').html(html);
-                      }
-         });
-    });
- 
     </script>
-  </body>
+</body>
+
 </html>
