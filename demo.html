@@ -173,14 +173,24 @@
             console.log(coordinate);
             //ol.proj.transform(coordinate, source, destination)来转换不同的坐标点，
             // 比如，将地理坐标系108.4，23.7转换成墨卡托坐标系
-            var hdms = ol.coordinate.toStringHDMS(ol.proj.transform(
-                coordinate, 'EPSG:3857', 'EPSG:4326'
-            ));
-            content.innerHTML = '<ul>' + '<li>' + "坐标系：" + '<span>' + '<code>' + hdms + '</code>' + '</span>' + '</li>' + '</ul>';
+            // var hdms = ol.coordinate.toStringHDMS(ol.proj.transform(
+            //     coordinate, 'EPSG:3857', 'EPSG:4326'
+            // ));
+            
+            var strwkt=new ol.format.WKT().writeFeature(source,{
+                dataProjection: 'EPSG:3857',
+                featureProjection: 'EPSG:4326'
+            })
+            console.log(strwkt)
+
+            
+
+            content.innerHTML = '<ul><li>坐标系：<span><code>' + hdms + '</code></span></li></ul>';
             overlay.setPosition(coordinate);
 
         });
 
+        
     </script>
 </body>
 
