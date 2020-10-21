@@ -114,36 +114,16 @@
         $("#creategml").click(function () {
             // 获取feature列表
             var featuresinsert = select.getFeatures();
+            
             // 获取一个feature
             var featurenew = featuresinsert.getArray()[0];
-            // 为feature赋值属性
-            featurenew.set('transaction', 'update');
-            // 关联几何要素和属性要素的唯一ID
-            featurenew.setId('update.000001');
-            var featuresupdate = [featurenew];
-            featurenew.set('transaction', 'delete');
-            featurenew.setId('delete.000001');
-            var featuresdelete = [featurenew];
-            // 创建WFS解析器 
-            var WFSTSerializer = new ol.format.WFS();
-            // writeTransaction(inserts, updates, deletes, options)
-            // updates和deletes都需要要素有唯一ID，进行索引
-            // insert因为是新增，所以不需要
-            var featObject = WFSTSerializer.writeTransaction(featuresinsert,
-                featuresupdate, featuresdelete, {
-                featureNS: 'http://geoserver/gismap',//工作区URI
-                featurePrefix: 'gismap',//工作区名称
-                featureType: 'gismap:v6_time_pref_pgn_utf_wgs84',//图层名称
-                srsName: 'EPSG:4326'//坐标系
-            });
-            var serializer = new XMLSerializer();
-            var featString = serializer.serializeToString(featObject);
+            console.log(featurenew)
             // 打印到控制台看看效果
-            console.log(featString);
+            // console.log(featString);
             // 顺便看一下WKT文本
             var wkt = new ol.format.WKT();
             var wktstr = wkt.writeGeometry(featurenew.getGeometry());
-            console.log(wktstr);
+            console.log(wktstr)
             // 保存点坐标
             $.ajax({
                 type: "post",
